@@ -1,7 +1,7 @@
 import crypto as c
 
-h = c.H()
-g = c.G()
+# h = c.H()
+# g = c.G()
 
 # print(h.add_mod(2,3,6))
 # print(g.pow_mod(2,3,10))
@@ -13,13 +13,13 @@ g = c.G()
 # print(test.order(mod))
 # print(len(set([test.pow_mod(g, x, mod) for x in range(mod)])))
 
-mod = 877
-order = c.G().order(mod)
-g = c.gen_generator(mod)
+# mod = 877
+# order = c.G().order(mod)
+# g = c.gen_generator(mod)
 
-print(g)
-q = set([c.G().pow_mod(g, y, mod) for y in range(mod)])
-print(len(q), order, q)
+# print(g)
+# q = set([c.G().pow_mod(g, y, mod) for y in range(mod)])
+# print(len(q), order, q)
 
 # for x in range(1, mod):
 #     if not c.is_generator_simple(x, mod):
@@ -41,3 +41,29 @@ print(len(q), order, q)
 #     if len(generators) > 0:
 #         print(c.factors(mod - 1))
 #         print(mod, generators)
+
+# dh = c.DiffieHellman()
+# (x, gX) = dh.sample()
+# print("x", x)
+# print("gX", gX)
+#
+# (y, gY) = dh.sample()
+# print("y", y)
+# print("gY", gY)
+#
+# aliceKey = dh.key(gY, x)
+# bobKey = dh.key(gX, y)
+#
+# print("alice", aliceKey)
+# print("bob", bobKey)
+
+# eg = c.ElGamal()
+# sec, pub = eg.keyGen()
+# m = 32
+# print("Original Message", m)
+#
+# mEnc = eg.enc(pub, m)
+# print("Encrypted", mEnc)
+#
+# mDec = eg.dec(sec, mEnc)
+# print("Decrypted", mDec)

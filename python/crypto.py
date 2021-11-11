@@ -108,6 +108,15 @@ def phi(primes):
     return result
 
 
+def genPrime(a, b):
+    resultList = []
+    for i in range(a, b):
+        if is_prime(i):
+            resultList.append(i)
+
+    return random.choice(resultList)
+
+
 # Additive group
 class H:
     def add_mod(self, x, y, m):
@@ -154,3 +163,36 @@ class G:
 
     def mul_invert_mod(self, x, m):
         return x ** (self.order(m) - 1) % m
+
+
+class DiffieHellman(G):
+    p = genPrime(1000000, 2000000)
+    g = gen_generator(p)
+
+    print("Generator", g)
+    print("Modulus", p)
+
+    def sample(self):
+        x = random.randint(0, self.p - 1)
+        bigX = self.pow_mod(self.g, x, self.p)
+        return x, bigX
+
+    def key(self, pub, sec):
+        return self.pow_mod(pub, sec, self.p)
+
+
+class ElGamal(DiffieHellman):
+    def enc(self, pub, m):
+        (y, gY) = self.sample()
+        c2 = self.mul_mod(self.key(pub, y), m, self.p)
+        c1 = gY
+        return c1, c2
+
+    def dec(self, sec, c):
+        c1, c2 = c
+        sharedKey = self.key(c1, sec)
+        sharedKeyInv = self.mul_invert_mod(sharedKey, self.p)
+        return self.mul_mod(c2, sharedKeyInv, self.p)
+
+    def keyGen(self):
+        return self.sample()
