@@ -1,22 +1,18 @@
 from math import floor, sqrt
 import random
-
+import hashlib
 
 def add(x, y):
     return x + y
 
-
 def mul(x, y):
     return x * y
-
 
 def sub(x, y):
     return x - y
 
-
 def div(x, y):
     return x / y
-
 
 def gen_generator(m: int) -> int:
     g = None
@@ -166,7 +162,7 @@ class G:
 
 
 class DiffieHellman(G):
-    p = genPrime(1000000, 2000000)
+    p = genPrime(10000, 90000)
     g = gen_generator(p)
 
     print("Generator", g)
@@ -196,3 +192,92 @@ class ElGamal(DiffieHellman):
 
     def keyGen(self):
         return self.sample()
+
+
+
+class CramerShoup(DiffieHellman):
+
+    def __init__(self):
+        self.H = hashlib.sha3_512()
+
+        alpha, g_ = self.sample()
+        x, gx = self.sample()
+        z, gz = self.sample()
+        z_, gz_ = self.sample()
+
+        y = random.randint(0, self.p - 1)
+        w = random.randint(0, self.p - 1)
+        w_ = random.randint(0, self.p - 1)
+
+        # secret key
+        self._sK = {
+            "alpha": alpha,
+            "x" : x,
+            "y": y,
+            "z" : z,
+            "z_": z_,
+            "w": w,
+            "w_": w_
+        }
+
+        # public key
+        self._pK = {
+            "A": self.mul_mod(gx, self.pow_mod(g_,y, self.p), self.p),
+            "B": self.mul_mod(gz, self.pow_mod(g_,w, self.p), self.p),
+            "B_": self.mul_mod(gz_, self.pow_mod(g_,w_, self.p), self.p),
+            "g": self.g,
+            "g_": g_,
+            "p": self.p
+        }
+
+    def getPublicKey(self):
+        return self._pK
+
+    def enc(self, pub, m):
+        r = random.randint(0, self.p - 1)
+        R = self.pow_mod(pub['g'], r, pub['p'])
+        R_ = self.pow_mod(pub['g_'], r, pub['p'])
+        P = self.mul_mod( self.pow_mod(pub['A'], r, pub['p']),m, pub['p'])
+        beta = (str(R_)+str(R)+str(P)).encode()
+        self.H.update(beta)
+        h = int(self.H.hexdigest(), 16) % self.order(pub['p'])
+        T = self.pow_mod(
+                self.mul_mod(
+                    pub['B'],
+                    self.pow_mod(pub['B_'], h, pub['p']),
+                    pub['p']
+                ),
+                r,
+                pub['p']
+        )
+        return {"R": R, "R_": R_, "P": P, "T": T}
+
+
+    def dec(self, c):
+        beta_ = (str(c['R_'])+str(c['R'])+str(c['P'])).encode()
+        self.H.update(beta_)
+        h = int(self.H.hexdigest(), 16) % self.order(self.p)
+
+        # T validation part 1
+        Tv1 = self.mul_mod(
+            self.pow_mod(c['R'], self._sK['z'], self.p),
+            self.pow_mod(c['R'], self.mul_mod(h,self._sK['z_'], self.order(self.p)),self.p),
+            self.p
+        )
+
+        # T validation part 2
+        Tv2 = self.mul_mod(
+            self.pow_mod(c['R_'], self._sK['w'], self.p),
+            self.pow_mod(c['R_'], self.mul_mod(h, self._sK['w_'], self.order(self.p)), self.p),
+            self.p
+        )
+
+        if c['T'] == self.mul_mod(Tv1, Tv2, self.p):
+            Rx = self.pow_mod(c['R'], self._sK['x'], self.p)
+            R_y = self.pow_mod(c['R_'], self._sK['y'], self.p)
+            invRxR_y = self.mul_invert_mod(self.mul_mod(Rx, R_y, self.p),self.p)
+            return self.mul_mod(c['P'], invRxR_y, self.p)
+        else:
+            raise Exception("Validation error")
+
+
