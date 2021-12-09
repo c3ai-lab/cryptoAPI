@@ -281,3 +281,41 @@ class CramerShoup(DiffieHellman):
             raise Exception("Validation error")
 
 
+class Threshhold_ElGamal(ElGamal):
+    def __init__(self, players, secPar):
+        self.players = players
+        self.degree = players - 1
+        self.secPar = secPar
+        self.xCoords = [x for x in range(0, self.players + 1)]
+
+    # Coords for Players start at 1 and increase by 1 each
+    # Coords for x0 is 0
+    def lagrangeCoeff(self):
+        delta = [1 for x in range(0, self.players)]
+        for i in range(1, self.players + 1):
+            for j in range(1, self.players + 1):
+                if i != j:
+                    delta[i] *= (self.xCoords[0] - self.xCoords[j]) / (self.xCoords[i] - self.xCoords[j])
+
+    def keyGen(self):
+        pA = [random.randint(0, self.secPar) for x in range(0,self.players)]
+
+        pX = [0 for x in range(0, self.players)]
+        for n in range(0, self.players + 1):
+            for i in range(0, self.players):
+                pX[n] += pA[i] * (self.xCoords[n] ^ i)
+
+        pKey = self.g ^ pX[0]
+        pX[0] = None
+        sKey = pX
+        
+        return pKey, sKey
+
+    def encrypt(self, pKey, m):
+        return self.enc(self, pKey, m)
+
+    # Decrypt fehlt
+    # Funktion, um mit Secret-Key c1 zu berechnen
+    # Funktion um Secret - Key zu rekonstruieren
+
+

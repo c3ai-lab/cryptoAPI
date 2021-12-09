@@ -69,7 +69,7 @@ def prGreen(skk): print("\033[92m {}\033[00m".format(skk))
 # mDec = eg.dec(sec, mEnc)
 # print("Decrypted", mDec)
 
-Alice = c.CramerShoup()
+""" Alice = c.CramerShoup()
 Bob = c.CramerShoup()
 
 m1 = 7983 % Bob.p
@@ -95,4 +95,4 @@ print("dec m2: ", dec_m2)
 print("homomorphism - Test")
 dec_m3 = Bob.dec(C3)
 
-print("dec m3: ", dec_m3)
+print("dec m3: ", dec_m3) """
