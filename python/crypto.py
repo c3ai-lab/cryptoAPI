@@ -1,6 +1,8 @@
 from math import floor, sqrt
 import random
 import hashlib
+from typing import Tuple
+
 
 def add(x, y):
     return x + y
@@ -331,3 +333,41 @@ class Threshhold_ElGamal(ElGamal):
     # "Threshhold Decrypt" Funktion
     # Input: Output von Ciphertext Share von allen Players
     # Rekonstruiert den Secret Key im Exponent
+
+
+class FDH_RSA(G):
+    def __init__(self):
+        self.hash = hashlib.sha3_512
+        self.p = genPrime(1000, 2000)
+        self.q = genPrime(1000, 2000)
+        self.n = self.p * self.q
+        self.phi = self.order(self.n)
+
+    @staticmethod
+    def egcd(a: int, b: int) -> Tuple[int, int, int]:
+        if a == 0:
+            return b, 0, 1
+        else:
+            g, y, x = FDH_RSA.egcd(b % a, a)
+            return g, x - (b // a) * y, y
+
+    def key_gen(self):
+        e = random.randint(0, self.phi)
+        while FDH_RSA.egcd(e, self.phi)[0] != 1:
+            e = random.randint(0, self.phi)
+
+        # self.mul_invert_mod(e, self.phi)
+        d = pow(e, -1, self.phi)
+
+        pk = (e, self.n)
+        sk = (d, self.n)
+
+        return pk, sk
+
+    def sign(self, sk: Tuple[int, int], m: str):
+        h = int(self.hash(m.encode()).hexdigest(), 16)
+        return pow(h, sk[0], sk[1])
+
+    def verify(self, pk: Tuple[int, int], m: str, sigma: int):
+        h = int(self.hash(m.encode()).hexdigest(), 16)
+        return h % self.n == pow(sigma, pk[0], pk[1])

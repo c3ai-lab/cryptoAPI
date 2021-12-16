@@ -125,3 +125,10 @@ print ("Encrypted Message: ", mEnc)
 mDec = thElGamal.decrypt(sKeys, mEnc)
 print ("Decrypted Message:", mDec)
 
+
+
+f = c.FDH_RSA()
+pk, sk = f.key_gen()
+m = "Hallo"
+sign = f.sign(sk, m)
+print("Verifikation:", f.verify(pk, m, sign))
