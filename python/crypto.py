@@ -176,25 +176,6 @@ class DiffieHellman(G):
     def key(self, pub, sec):
         return self.pow_mod(pub, sec, self.p)
 
-
-class ElGamal(DiffieHellman):
-    def enc(self, pub, m):
-        (y, gY) = self.sample()
-        c2 = self.mul_mod(self.key(pub, y), m, self.p)
-        c1 = gY
-        return c1, c2
-
-    def dec(self, sec, c):
-        c1, c2 = c
-        sharedKey = self.key(c1, sec)
-        sharedKeyInv = self.mul_invert_mod(sharedKey, self.p)
-        return self.mul_mod(c2, sharedKeyInv, self.p)
-
-    def keyGen(self):
-        return self.sample()
-
-
-
 class CramerShoup(DiffieHellman):
 
     def __init__(self):
@@ -280,4 +261,73 @@ class CramerShoup(DiffieHellman):
         else:
             raise Exception("Validation error")
 
+class ElGamal(DiffieHellman):
+    def enc(self, pub, m):
+        (y, gY) = self.sample()
+        c2 = self.mul_mod(self.key(pub, y), m, self.p)
+        c1 = gY
+        return c1, c2
 
+    def dec(self, sec, c):
+        c1, c2 = c
+        sharedKey = self.key(c1, sec)
+        sharedKeyInv = self.mul_invert_mod(sharedKey, self.p)
+        return self.mul_mod(c2, sharedKeyInv, self.p)
+
+    def keyGen(self):
+        return self.sample()
+
+class Threshhold_ElGamal(ElGamal):
+    def __init__(self, players, secPar):
+        self.players = players
+        self.degree = players - 1
+        self.secPar = secPar
+        self.xCoords = [x for x in range(0, self.players + 1)]
+        self.delta = self.lagrangeCoeff()
+
+    # Coords for Players start at 1 and increase by 1 each
+    # Coords for x0 is 0
+    def lagrangeCoeff(self):
+        delta = [1 for x in range(0, self.players + 1)]
+        for i in range(1, self.players + 1):
+            for j in range(1, self.players + 1):
+                if i != j:
+                    delta[i] *= (self.xCoords[0] - self.xCoords[j]) / (self.xCoords[i] - self.xCoords[j])
+        return delta
+
+    # Summe von 1 bis players + 1 von delta * y 
+    def calcSecretKey(self, sKey):
+        sKey[0] = 0
+        for i in range (1, self.players + 1):
+            sKey[0] += self.delta[i] * sKey[i]
+        return int(sKey[0])
+
+    def keyGen(self):
+        pA = [random.randint(0, self.secPar) for x in range(0,self.players)]
+
+        pX = [0 for x in range(0, self.players + 1)]
+        for n in range(1, self.players + 1):
+            for i in range(0, self.players):
+                pX[n] += pA[i] * (self.xCoords[n] ^ i)
+
+        pX[0] = self.calcSecretKey(pX)
+        pKey = self.pow_mod(self.g, pX[0], self.p)
+        pX[0] = 0
+        sKey = pX
+        
+        return pKey, sKey
+
+    def encrypt(self, pKey, m):
+        return self.enc(pKey, m)
+
+    def decrypt(self, sKeys, c):
+        return self.dec(self.calcSecretKey(sKeys), c)
+
+    # "CipherText Share" als Funktion
+    # Input: c1 vom Chiffrat und Share von Player p[i]
+    # Output: c1 hoch Share
+
+
+    # "Threshhold Decrypt" Funktion
+    # Input: Output von Ciphertext Share von allen Players
+    # Rekonstruiert den Secret Key im Exponent

@@ -58,41 +58,70 @@ def prGreen(skk): print("\033[92m {}\033[00m".format(skk))
 # print("alice", aliceKey)
 # print("bob", bobKey)
 
+
+
+# Alice = c.CramerShoup()
+# Bob = c.CramerShoup()
+
+# m1 = 7983 % Bob.p
+# m2 = 8880 % Bob.p
+# print("m1: ", m1)
+# print("m2: ", m2)
+
+# C1 = Alice.enc(Bob.getPublicKey(), m1)
+# C2 = Alice.enc(Bob.getPublicKey(), m2)
+# C3 = {}
+# for key in C1:
+#     C3[key] = c.CramerShoup.mul_mod(Bob, C1[key], C2[key], Bob.p)
+
+# print("C1: ", C1)
+# print("C2: ", C2)
+# print("C3: ", C3)
+
+# dec_m1 = Bob.dec(C1)
+# print("dec m1: ", dec_m1)
+# dec_m2 = Bob.dec(C2)
+# print("dec m2: ", dec_m2)
+
+# print("homomorphism - Test")
+# dec_m3 = Bob.dec(C3)
+
+# print("dec m3: ", dec_m3)
+
+
 # eg = c.ElGamal()
 # sec, pub = eg.keyGen()
+# print ("Public Key: ", pub)
+# print ("Secret Key: ", sec)
 # m = 32
 # print("Original Message", m)
-#
+
 # mEnc = eg.enc(pub, m)
 # print("Encrypted", mEnc)
-#
+
 # mDec = eg.dec(sec, mEnc)
 # print("Decrypted", mDec)
 
-Alice = c.CramerShoup()
-Bob = c.CramerShoup()
+# ------------------------------- Threshhold El-Gamal -------------------------------------------
+playerCount = 3
+securityParameter = 100
 
-m1 = 7983 % Bob.p
-m2 = 8880 % Bob.p
-print("m1: ", m1)
-print("m2: ", m2)
 
-C1 = Alice.enc(Bob.getPublicKey(), m1)
-C2 = Alice.enc(Bob.getPublicKey(), m2)
-C3 = {}
-for key in C1:
-    C3[key] = c.CramerShoup.mul_mod(Bob, C1[key], C2[key], Bob.p)
+thElGamal = c.Threshhold_ElGamal(playerCount,securityParameter)
+pKey, sKeys = thElGamal.keyGen()
 
-print("C1: ", C1)
-print("C2: ", C2)
-print("C3: ", C3)
+print("Secret Keys: ", sKeys)
+print("Public Key: ", pKey)
 
-dec_m1 = Bob.dec(C1)
-print("dec m1: ", dec_m1)
-dec_m2 = Bob.dec(C2)
-print("dec m2: ", dec_m2)
+sKey = thElGamal.calcSecretKey(sKeys)
+print("Calculated Secret Key:", sKey)
 
-print("homomorphism - Test")
-dec_m3 = Bob.dec(C3)
+m = 2345
+print ("Original Message: ", m)
 
-print("dec m3: ", dec_m3)
+mEnc = thElGamal.encrypt(pKey, m)
+print ("Encrypted Message: ", mEnc)
+
+mDec = thElGamal.decrypt(sKeys, mEnc)
+print ("Decrypted Message:", mDec)
+
