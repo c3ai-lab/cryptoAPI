@@ -6,11 +6,16 @@ import java.math.BigInteger;
 
 public class ElgamalEncryption {
 
-    public static ElGamalKeyPair keyGen(ElgamalPublicParams publicParams) {
-        return new ElGamalKeyPair(publicParams);
+    public static ElGamalKeyPair keyGen(int secPar) {
+        BigInteger p = MathLib.randomPrime(secPar);
+        ElgamalKeyParams publicParams = new ElgamalKeyParams(MathLib.random(p), p);
+        BigInteger secretKey = MathLib.random(publicParams.prime);
+        BigInteger publicKey = MathLib.exp(publicParams.generator, secretKey, publicParams.prime);
+
+        return new ElGamalKeyPair(publicParams, secretKey, publicKey);
     }
 
-    public static BigInteger[] enc(BigInteger otherPublicKey, ElgamalPublicParams publicParams, BigInteger message) {
+    public static BigInteger[] enc(BigInteger otherPublicKey, ElgamalKeyParams publicParams, BigInteger message) {
         BigInteger y = MathLib.random(publicParams.prime);
         BigInteger c1 = MathLib.exp(publicParams.generator, y, publicParams.prime);
 

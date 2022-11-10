@@ -2,7 +2,6 @@ import cryptoapi.MathLib;
 import cryptoapi.diffiehellman.DiffieHellmanKeyExchange;
 import cryptoapi.elgamal.ElGamalKeyPair;
 import cryptoapi.elgamal.ElgamalEncryption;
-import cryptoapi.elgamal.ElgamalPublicParams;
 import java.math.BigInteger;
 
 public class Main {
@@ -46,18 +45,16 @@ public class Main {
 
     public static void elGamal() {
         System.out.println("Start ElGamal example...");
-        // Public Parameters
+        // Define Security Parameter
         final int secpar = 128;
-        BigInteger p = MathLib.randomPrime(secpar);
-        ElgamalPublicParams publicParams = new ElgamalPublicParams(MathLib.random(p), p);
-        System.out.println("publicParams: " + publicParams);
 
         // Bob
-        ElGamalKeyPair bob = ElgamalEncryption.keyGen(publicParams);
+        ElGamalKeyPair bob = ElgamalEncryption.keyGen(secpar);
+        System.out.println("Bob: " + bob);
 
         // Alice
         BigInteger m = new BigInteger("100000");
-        BigInteger[] ciphretexts = ElgamalEncryption.enc(bob.publicKey, publicParams, m);
+        BigInteger[] ciphretexts = ElgamalEncryption.enc(bob.publicKey, bob.publicParams, m);
         BigInteger c1 = ciphretexts[0];
         BigInteger c2 = ciphretexts[1];
 
