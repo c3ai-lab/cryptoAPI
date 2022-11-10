@@ -10,4 +10,13 @@ public class ElgamalPublicParams {
         this.generator = generator;
         this.prime = prime;
     }
+
+    @Override
+    public String toString() {
+        String s = "{";
+        s += "generator: " + this.generator;
+        s += ", prime: " + this.prime;
+        s += "}";
+        return s;
+    }
 }
