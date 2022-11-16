@@ -1,7 +1,7 @@
 import cryptoapi.MathLib;
 import cryptoapi.diffiehellman.DiffieHellmanKeyExchange;
 import cryptoapi.elgamal.ElGamalKeyPair;
-import cryptoapi.elgamal.ElgamalEncryption;
+import cryptoapi.elgamal.ElGamalEncryption;
 import java.math.BigInteger;
 
 public class Main {
@@ -49,12 +49,12 @@ public class Main {
         final int secpar = 128;
 
         // Bob
-        ElGamalKeyPair bob = ElgamalEncryption.keyGen(secpar);
+        ElGamalKeyPair bob = ElGamalEncryption.keyGen(secpar);
         System.out.println("Bob: " + bob);
 
         // Alice
         BigInteger m = new BigInteger("100000");
-        BigInteger[] ciphretexts = ElgamalEncryption.enc(bob.publicKey, bob.publicParams, m);
+        BigInteger[] ciphretexts = ElGamalEncryption.enc(bob.publicKey, bob.keyParams, m);
         BigInteger c1 = ciphretexts[0];
         BigInteger c2 = ciphretexts[1];
 
@@ -62,7 +62,7 @@ public class Main {
         System.out.println("c2: " + c2);
 
         // Bob
-        BigInteger mprime = ElgamalEncryption.dec(bob, c1, c2);
+        BigInteger mprime = ElGamalEncryption.dec(bob, c1, c2);
 
         compare(mprime, m);
 

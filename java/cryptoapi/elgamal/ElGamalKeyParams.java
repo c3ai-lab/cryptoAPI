@@ -2,11 +2,11 @@ package cryptoapi.elgamal;
 
 import java.math.BigInteger;
 
-public class ElgamalKeyParams {
+public class ElGamalKeyParams {
     public final BigInteger generator;
     public final BigInteger prime;
 
-    protected ElgamalKeyParams(BigInteger generator, BigInteger prime) {
+    protected ElGamalKeyParams(BigInteger generator, BigInteger prime) {
         this.generator = generator;
         this.prime = prime;
     }

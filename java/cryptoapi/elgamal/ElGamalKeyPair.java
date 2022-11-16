@@ -3,14 +3,14 @@ package cryptoapi.elgamal;
 import java.math.BigInteger;
 
 public class ElGamalKeyPair {
-    public final ElgamalKeyParams publicParams;
+    public final ElGamalKeyParams keyParams;
     public final BigInteger publicKey;
     private final BigInteger secretKey;
 
-    protected ElGamalKeyPair(ElgamalKeyParams publicParams, BigInteger secretKey, BigInteger publicKey) {
+    protected ElGamalKeyPair(ElGamalKeyParams keyParams, BigInteger secretKey, BigInteger publicKey) {
         this.secretKey = secretKey;
         this.publicKey = publicKey;
-        this.publicParams = publicParams;
+        this.keyParams = keyParams;
     }
 
     protected BigInteger getSecretKey() {
@@ -20,7 +20,7 @@ public class ElGamalKeyPair {
     @Override
     public String toString() {
         String s = "{";
-        s += "publicParams: " + this.publicParams.toString();
+        s += "publicParams: " + this.keyParams.toString();
         s += ", publicKey: " + this.publicKey;
         s += ", secretKey: " + this.secretKey;
         s += "}";
