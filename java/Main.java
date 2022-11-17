@@ -2,8 +2,44 @@ import java.math.BigInteger;
 import java.util.Random;
 
 public class Main {
+	
+	public static void main(String[] args) {
+		// Paramaters
+        int secpar = 16;
+        BigInteger m = BigInteger.valueOf(15);
+        
+        BigInteger[] keys = rsa_keyGen(secpar);
 
-    public static void main(String[] args) {
+        BigInteger sigma = rsa_sign(keys[0], keys[1], m);
+        
+        System.out.println(rsa_verify(d, N, m, sigma));
+	}
+	
+	public static BigInteger[] rsa_keyGen(int secpar) {
+		// Paramaters
+		BigInteger p = randomPrime(secpar);
+        BigInteger q = randomPrime(secpar);
+        BigInteger N = p.multiply(q);
+        BigInteger phi = mul((p.subtract(BigInteger.ONE)), q.subtract(BigInteger.ONE), N);
+        
+        BigInteger e = random(phi);
+        BigInteger d = inverse(e, phi);
+        
+        // sk = e, N
+        // pk = d, N
+        return new BigInteger[] { e, N, d };
+	}
+	
+	public static BigInteger rsa_sign(BigInteger e, BigInteger N, BigInteger m) {
+		return exp(m, e, N);
+	}
+	
+	public static boolean rsa_verify(BigInteger d, BigInteger N, BigInteger m, BigInteger sigma) {
+		return exp(sigma, d, N).equals(m);
+	}
+	
+
+    public static void elGamal() {
 
         // Paramaters
         int secpar = 128;
