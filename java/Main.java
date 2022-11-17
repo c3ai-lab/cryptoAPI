@@ -5,25 +5,29 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// Paramaters
-        int secpar = 16;
-        BigInteger m = BigInteger.valueOf(15);
+        int secpar = 4;
+        BigInteger m = BigInteger.valueOf(5);
         
         BigInteger[] keys = rsa_keyGen(secpar);
 
         BigInteger sigma = rsa_sign(keys[0], keys[1], m);
         
-        System.out.println(rsa_verify(d, N, m, sigma));
+        System.out.println(rsa_verify(keys[2], keys[1], m, sigma));
 	}
 	
 	public static BigInteger[] rsa_keyGen(int secpar) {
 		// Paramaters
-		BigInteger p = randomPrime(secpar);
-        BigInteger q = randomPrime(secpar);
+		//BigInteger p = randomPrime(secpar);
+		//BigInteger q = randomPrime(secpar);
+		BigInteger p = BigInteger.valueOf(3);
+        BigInteger q = BigInteger.valueOf(5);
         BigInteger N = p.multiply(q);
-        BigInteger phi = mul((p.subtract(BigInteger.ONE)), q.subtract(BigInteger.ONE), N);
+        BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)); // phi = 2 * 4 = 8
         
-        BigInteger e = random(phi);
+        BigInteger e = BigInteger.valueOf(4);
         BigInteger d = inverse(e, phi);
+        
+        System.out.println("Inverses: " + e.multiply(d));
         
         // sk = e, N
         // pk = d, N
@@ -35,9 +39,16 @@ public class Main {
 	}
 	
 	public static boolean rsa_verify(BigInteger d, BigInteger N, BigInteger m, BigInteger sigma) {
+		System.out.println(exp(sigma, d, N));
+		System.out.println(m);
 		return exp(sigma, d, N).equals(m);
 	}
 	
+	public static BigInteger phi_inverse(BigInteger e, BigInteger p, BigInteger q) {
+		BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+		BigInteger ord = 
+				
+	}
 
     public static void elGamal() {
 
@@ -137,3 +148,4 @@ public class Main {
     }
 
 }
+
