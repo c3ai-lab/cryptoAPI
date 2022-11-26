@@ -1,3 +1,4 @@
+import cryptoapi.EGCDResult;
 import cryptoapi.MathLib;
 import cryptoapi.diffiehellman.*;
 import cryptoapi.elgamal.*;
@@ -12,6 +13,22 @@ public class Main {
         rsa();
 	}
 
+    public static void rsa_attack_example() {
+        System.out.println("Start RSA-Attack example...");
+
+        // Paramaters
+        int secpar = 16;
+        BigInteger m1 = BigInteger.valueOf(15);
+        BigInteger m2 = BigInteger.valueOf(32);
+
+        RSAKeyPair keys = RSAEncryption.keyGen(secpar);
+        BigInteger sigma1 = RSAEncryption.sign(keys, m1);
+        BigInteger sigma2 = RSAEncryption.sign(keys, m2);
+        BigInteger sig_s = sigma2.multiply(sigma1);
+        BigInteger m_s = m2.multiply(m1);
+
+        System.out.println(RSAEncryption.verify(keys.publicKey,m_s, sig_s));
+    }
 
     public static void rsa() {
         System.out.println("Start RSA signing example...");

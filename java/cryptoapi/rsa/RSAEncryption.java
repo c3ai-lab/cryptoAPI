@@ -12,8 +12,8 @@ public class RSAEncryption {
         BigInteger N = p.multiply(q);
         BigInteger phi = MathLib.mul((p.subtract(BigInteger.ONE)), q.subtract(BigInteger.ONE), N);
 
-        BigInteger e = MathLib.random(phi);
-        BigInteger d = MathLib.inverse(e, phi);
+        BigInteger e = sampleE(phi);
+        BigInteger d = MathLib.inverseEGCD(e, phi);
 
         // sk = e, N
         // pk = d, N
@@ -26,5 +26,13 @@ public class RSAEncryption {
 
     public static boolean verify(RSAKeyTuble publicKey, BigInteger m, BigInteger sigma) {
         return MathLib.exp(sigma, publicKey.key, publicKey.modul).equals(m);
+    }
+
+    public static BigInteger sampleE(BigInteger phi) {
+        BigInteger e;
+        do {
+            e = MathLib.random(phi);
+        } while (!e.gcd(phi).equals(BigInteger.ONE) && !e.equals(BigInteger.ONE));
+        return e;
     }
 }

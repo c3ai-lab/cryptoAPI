@@ -27,7 +27,7 @@ public class ElGamalEncryption {
 
     public static BigInteger dec(ElGamalKeyPair keypair, BigInteger c1, BigInteger c2) {
         BigInteger k = MathLib.exp(c1, keypair.getSecretKey(), keypair.keyParams.prime);
-        BigInteger kinv = MathLib.inverse(k, keypair.keyParams.prime);
+        BigInteger kinv = MathLib.inverseFermat(k, keypair.keyParams.prime);
         BigInteger m = MathLib.mul(c2, kinv, keypair.keyParams.prime);
         return m;
     }
