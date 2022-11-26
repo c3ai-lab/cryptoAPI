@@ -11,6 +11,7 @@ public class Main {
         //diffieHellman();
         //elGamal();
         rsa();
+        rsa_attack_example();
 	}
 
     public static void rsa_attack_example() {

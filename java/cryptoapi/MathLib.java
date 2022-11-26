@@ -1,6 +1,8 @@
 package cryptoapi;
 
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 public class MathLib {
@@ -86,6 +88,16 @@ public class MathLib {
             EGCDResult res = egcd(b.mod(a), a);
             BigInteger newX = res.t.subtract(b.divide(a).multiply(res.s));
             return new EGCDResult(res.gcd, newX, res.s);
+        }
+    }
+
+    public static BigInteger hash(BigInteger message) {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+            return new BigInteger(messageDigest.digest(message.toByteArray()));
+        } catch (NoSuchAlgorithmException ex) {
+            //Should be thrown
+            return null;
         }
     }
 }

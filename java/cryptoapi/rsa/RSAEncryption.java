@@ -21,11 +21,11 @@ public class RSAEncryption {
     }
 
     public static BigInteger sign(RSAKeyPair keyPair, BigInteger m) {
-        return MathLib.exp(m, keyPair.secretKey.key, keyPair.secretKey.modul);
+        return MathLib.exp(MathLib.hash(m), keyPair.secretKey.key, keyPair.secretKey.modul);
     }
 
     public static boolean verify(RSAKeyTuble publicKey, BigInteger m, BigInteger sigma) {
-        return MathLib.exp(sigma, publicKey.key, publicKey.modul).equals(m);
+        return MathLib.exp(sigma, publicKey.key, publicKey.modul).equals(MathLib.hash(m).mod(publicKey.modul));
     }
 
     public static BigInteger sampleE(BigInteger phi) {
